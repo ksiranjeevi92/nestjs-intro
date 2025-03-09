@@ -9,6 +9,14 @@ import { patchPostDto } from './dto/patch-post.dto';
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
+  @Post()
+  public create(@Body() createPostDto: CreatePostDto) {
+    //createMetaOptions
+    //createPost
+    //Add metaoptions to the post
+    //return post
+  }
+
   @Get('/{:userId}')
   public getPosts(@Param('userId') userId: string) {
     return this.postsService.findByUserId(userId);

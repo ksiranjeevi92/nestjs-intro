@@ -40,9 +40,9 @@ export class Post {
 
   @Column({
     type: 'enum',
-    enum: postType,
+    enum: postStatus,
     nullable: false,
-    default: postStatus.DEAFT,
+    default: postStatus.DRAFT,
   })
   status: postStatus;
 

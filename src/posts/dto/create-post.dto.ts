@@ -95,28 +95,8 @@ export class CreatePostDto {
   @MinLength(3, { each: true })
   tags?: string[];
 
-  @ApiPropertyOptional({
-    description: '',
-    type: 'array',
-    required: false,
-    items: {
-      type: 'object',
-      properties: {
-        key: {
-          type: 'string',
-          description: 'The key can be string identifier',
-          example: 'sidebarEnabled',
-        },
-        value: {
-          type: 'any',
-          description: 'The value can be any identifier',
-          example: true,
-        },
-      },
-    },
-  })
+  @ApiPropertyOptional()
   @IsOptional()
-  @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreatePostMeataOptionsDto)
   metaOptions?: CreatePostMeataOptionsDto[];

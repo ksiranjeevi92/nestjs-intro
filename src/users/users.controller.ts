@@ -59,8 +59,8 @@ export class UsersController {
     return 'users from the controller';
   }
   @Post()
-  public createUser(@Body() createUserDto: CreateUserDto): string {
-    return 'users from the controller';
+  public createUser(@Body() createUserDto: CreateUserDto) {
+    return this.usersService.createUser(createUserDto);
   }
 
   @Patch()

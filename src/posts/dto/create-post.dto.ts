@@ -12,10 +12,11 @@ import {
   MinLength,
   Matches,
   ValidateNested,
+  MaxLength,
 } from 'class-validator';
 
 import { Type } from 'class-transformer';
-import { CreatePostMeataOptionsDto } from './create-post-meta-options.dto';
+import { CreatePostMeataOptionsDto } from '../../metaoptions/dtos/create-post-meta-options.dto';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreatePostDto {
@@ -24,6 +25,7 @@ export class CreatePostDto {
     description: 'This is the title for post',
   })
   @IsString()
+  @MaxLength(512)
   @MinLength(4)
   @IsNotEmpty()
   title: string;
@@ -41,6 +43,7 @@ export class CreatePostDto {
   })
   @IsString()
   @IsNotEmpty()
+  @MaxLength(256)
   @Matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, { message: 'Slug field' })
   slug: string;
 
@@ -71,6 +74,7 @@ export class CreatePostDto {
   })
   @IsUrl()
   @IsOptional()
+  @MaxLength(1024)
   featuredImaeUrl?: string;
 
   @ApiPropertyOptional({

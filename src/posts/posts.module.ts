@@ -4,7 +4,7 @@ import { PostsService } from './providers/posts.service';
 import { UsersModule } from 'src/users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Post } from './post.entity';
-import { MetaOption } from 'src/metaoptions/meta-option.entity';
+import { MetaOption } from '../metaoptions/meta-option.entity';
 
 @Module({
   controllers: [PostsController],

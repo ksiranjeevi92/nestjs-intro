@@ -75,7 +75,7 @@ export class CreatePostDto {
   @IsUrl()
   @IsOptional()
   @MaxLength(1024)
-  featuredImaeUrl?: string;
+  featuredImageUrl?: string;
 
   @ApiPropertyOptional({
     description: 'Date',
@@ -99,5 +99,5 @@ export class CreatePostDto {
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => CreatePostMeataOptionsDto)
-  metaOptions?: CreatePostMeataOptionsDto[];
+  metaOptions?: CreatePostMeataOptionsDto | null;
 }

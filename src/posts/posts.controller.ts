@@ -1,4 +1,14 @@
-import { Controller, Get, Param, Post, Body, Patch } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Post,
+  Body,
+  Patch,
+  Delete,
+  Query,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { PostsService } from './providers/posts.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -10,29 +20,28 @@ export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Post()
-  public create(@Body() createPostDto: CreatePostDto) {
-    //createMetaOptions
-    //createPost
-    //Add metaoptions to the post
-    //return post
-  }
-
-  @Get('/{:userId}')
-  public getPosts(@Param('userId') userId: string) {
-    return this.postsService.findByUserId(userId);
-  }
-
   @ApiOperation({
     summary: 'create new post',
   })
   @ApiResponse({
     status: 201,
   })
-  @Post()
-  public createPost(@Body() createPostDto: CreatePostDto) {}
+  public create(@Body() createPostDto: CreatePostDto) {
+    return this.postsService.create(createPostDto);
+  }
+
+  @Get()
+  public getPosts() {
+    return this.postsService.findAll();
+  }
 
   @Patch()
   public updatePost(@Body() patchPostDto: patchPostDto) {
     console.log(patchPostDto);
+  }
+
+  @Delete()
+  public deletePost(@Query('id', ParseIntPipe) id: number) {
+    return this.postsService.delete(id);
   }
 }

@@ -8,7 +8,7 @@ import {
 import { postType } from './enums/post-type.enum';
 import { postStatus } from './enums/postStatus.enum';
 import { CreatePostMeataOptionsDto } from '../metaoptions/dtos/create-post-meta-options.dto';
-import { MetaOption } from 'src/metaoptions/meta-option.entity';
+import { MetaOption } from '../metaoptions/meta-option.entity';
 
 @Entity()
 export class Post {
@@ -74,7 +74,12 @@ export class Post {
   //Work on the relationship
   tags?: string[];
 
-  @OneToOne(() => MetaOption)
+  @OneToOne(
+    () => MetaOption,
+    (metaOptions) => metaOptions.post,
+    // { cascade: ['remove', 'insert'] })
+    { cascade: true, eager: true },
+  )
   @JoinColumn()
   metaOptions?: MetaOption;
 }

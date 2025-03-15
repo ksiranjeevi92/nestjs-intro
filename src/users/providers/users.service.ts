@@ -64,9 +64,9 @@ export class UsersService {
    * @returns
    * method to return user by id
    */
-  public findById(id: string) {
-    return {
-      id: 123,
-    };
+  public async findById(id: number) {
+    return await this.usersRepository.findOneBy({
+      id,
+    });
   }
 }

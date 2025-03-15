@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { UsersService } from 'src/users/providers/users.service';
 import { Repository } from 'typeorm';
 import { Post } from '../post.entity';
 import { CreatePostDto } from '../dto/create-post.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MetaOption } from 'src/metaoptions/meta-option.entity';
+import { TagsService } from 'src/tags/providers/tags.service';
+import { patchPostDto } from '../dto/patch-post.dto';
 
 @Injectable()
 export class PostsService {
@@ -14,6 +16,7 @@ export class PostsService {
     @InjectRepository(MetaOption)
     private readonly metaOptionsRepository: Repository<MetaOption>,
     private readonly usersService: UsersService,
+    private readonly tagsService: TagsService,
   ) {}
 
   public async create(createPostDto: CreatePostDto) {
@@ -25,9 +28,17 @@ export class PostsService {
     //   await this.metaOptionsRepository.save(metaOptions);
     // }
 
+    let author = await this.usersService.findById(createPostDto.authorId);
+
+    let tags = await this.tagsService.findMultipletags(
+      createPostDto.tags ?? [],
+    );
+
     let post = this.postRepository.create({
       ...createPostDto,
       metaOptions: createPostDto.metaOptions ?? undefined,
+      author: author ?? undefined,
+      tags: tags,
     });
 
     // if (metaOptions) {
@@ -38,20 +49,43 @@ export class PostsService {
     return post;
   }
 
+  public async update(patchPostDto: patchPostDto) {
+    // Find new tags
+    let tags = await this.tagsService.findMultipletags(patchPostDto.tags || []);
+
+    // Find the post
+    let post = await this.postRepository.findOneBy({
+      id: patchPostDto.id,
+    });
+
+    if (!post) {
+      throw new NotFoundException(`Post with ID ${patchPostDto.id} not found`);
+    }
+
+    // Update post related properties
+    post.title = patchPostDto.title ?? post.title;
+    post.content = patchPostDto.content ?? post.content;
+    post.status = patchPostDto.status ?? post.status;
+    post.postType = patchPostDto.postType ?? post.postType;
+    post.slug = patchPostDto.slug ?? post.slug;
+    post.featuredImageUrl =
+      patchPostDto.featuredImageUrl ?? post.featuredImageUrl;
+    post.publishOn = patchPostDto.publishedOn ?? post.publishOn;
+
+    // Update the tags
+    post.tags = tags;
+
+    return await this.postRepository.save(post);
+  }
+
   public async findAll() {
     let posts = await this.postRepository.find({
       relations: {
         metaOptions: true,
+        author: true,
       },
     });
     return posts;
-  }
-
-  public findByUserId(userId: string) {
-    const user = this.usersService.findById(userId);
-    return {
-      user,
-    };
   }
 
   public async delete(id: number) {

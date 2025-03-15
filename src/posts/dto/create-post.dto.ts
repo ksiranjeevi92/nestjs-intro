@@ -13,6 +13,7 @@ import {
   Matches,
   ValidateNested,
   MaxLength,
+  IsInt,
 } from 'class-validator';
 
 import { Type } from 'class-transformer';
@@ -86,18 +87,24 @@ export class CreatePostDto {
   publishedOn?: Date;
 
   @ApiPropertyOptional({
-    description: 'An array of tags passed as string value',
-    example: ['one', 'two'],
+    description: 'An array of tags passed as int value',
+    example: [1, 1],
   })
   @IsOptional()
   @IsArray()
-  @IsString({ each: true })
-  @MinLength(3, { each: true })
-  tags?: string[];
+  @IsInt({ each: true })
+  tags?: number[];
 
   @ApiPropertyOptional()
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => CreatePostMeataOptionsDto)
   metaOptions?: CreatePostMeataOptionsDto | null;
+
+  @ApiProperty({
+    type: 'integer',
+  })
+  @IsNotEmpty()
+  @IsInt()
+  authorId: number;
 }

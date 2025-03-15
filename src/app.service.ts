@@ -12,7 +12,8 @@ export class AppService {
           data += chunk;
         });
         res.on('end', () => {
-          JSON.parse(data);
+          const result = JSON.parse(data);
+          console.log(result);
         });
       })
       .on('error', (err) => {

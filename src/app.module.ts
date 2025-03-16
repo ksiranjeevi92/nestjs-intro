@@ -7,31 +7,42 @@ import { UsersModule } from './users/users.module';
 import { PostsModule } from './posts/posts.module';
 import { AuthController } from './auth/auth.controller';
 import { AuthModule } from './auth/auth.module';
-import { User } from './users/user.entity';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TagsModule } from './tags/tags.module';
 import { MetaoptionsModule } from './metaoptions/metaoptions.module';
+import appConfig from './config/app.config';
+import databaseConfig from './config/database.config';
+import environmentValidation from './config/environment.validation';
+
+const ENV = process.env.NODE_ENV;
 
 @Module({
   imports: [
     UsersModule,
     PostsModule,
     AuthModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: !ENV ? '.env' : `.env.${ENV}`,
+      load: [appConfig, databaseConfig],
+      validationSchema: environmentValidation,
+    }),
     TypeOrmModule.forRootAsync({
-      imports: [],
-      inject: [],
-      useFactory: () => ({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         // entities: [User],
-        autoLoadEntities: true,
+        autoLoadEntities: configService.get('database.autoLoadEntities'),
         /**
          * synchronize is only for development
          */
-        synchronize: true,
-        port: 5432,
-        username: 'admin',
-        password: 'password',
-        host: 'localhost',
-        database: 'nestjs_users',
+        synchronize: configService.get('database.synchronize'),
+        port: configService.get('database.port'),
+        username: configService.get('database.user'),
+        password: configService.get('database.password'),
+        host: configService.get('database.host'),
+        database: configService.get('database.name'),
       }),
     }),
     TagsModule,

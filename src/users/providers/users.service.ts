@@ -15,6 +15,8 @@ import { ConfigService, ConfigType } from '@nestjs/config';
 import profileConfig from '../config/profile.config';
 import { UserCreateManyProvider } from './user-create-many.provider';
 import { CreateManyUsersDto } from '../dtos/create-many-users.dto';
+import { CreateUserProvider } from './create-user.provider';
+import { FindOneUserByEmail } from './find-one-user-by-email';
 
 /**
  *Class to connect users table and perform operation
@@ -47,35 +49,17 @@ export class UsersService {
     private readonly dataSource: DataSource,
 
     private readonly userCreateManyProvider: UserCreateManyProvider,
+
+    private readonly createUserProvider: CreateUserProvider,
+
+    /**
+     * Inject Find one user by email
+     */
+    private readonly findOneUserByEmailProvider: FindOneUserByEmail,
   ) {}
 
   public async createUser(createuserDto: CreateUserDto) {
-    let existingUser;
-    try {
-      //Check is user is already exist with the same Email
-      existingUser = await this.usersRepository.findOne({
-        where: {
-          email: createuserDto.email,
-        },
-      });
-    } catch (exception) {
-      throw new RequestTimeoutException(
-        'Unable to process your request at the moment please try later',
-        { description: 'Error connecting to database' },
-      );
-    }
-    //Handle the exception is user already exist
-    if (existingUser) {
-      throw new BadRequestException(
-        'The user already exists, please check your email',
-      );
-    }
-
-    //Create a new user
-    let newUser = this.usersRepository.create(createuserDto);
-    newUser = await this.usersRepository.save(newUser);
-
-    return newUser;
+    this.createUserProvider.createUser(createuserDto);
   }
 
   /**
@@ -112,5 +96,11 @@ export class UsersService {
 
   public async createMany(createManyUsersDto: CreateManyUsersDto) {
     this.userCreateManyProvider.creteMany(createManyUsersDto);
+  }
+
+  public async findOneByEmail(email: string) {
+    try {
+      return this.findOneUserByEmailProvider.findOneByEmail(email);
+    } catch (err) {}
   }
 }

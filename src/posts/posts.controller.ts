@@ -13,6 +13,7 @@ import { PostsService } from './providers/posts.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreatePostDto } from './dto/create-post.dto';
 import { patchPostDto } from './dto/patch-post.dto';
+import { GetPostsDto } from './dto/get-posts.dto';
 
 @Controller('posts')
 @ApiTags('Posts')
@@ -31,8 +32,8 @@ export class PostsController {
   }
 
   @Get()
-  public getPosts() {
-    return this.postsService.findAll();
+  public getPosts(@Query() postQuery: GetPostsDto) {
+    return this.postsService.findAll(postQuery);
   }
 
   @Patch()
